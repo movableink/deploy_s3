@@ -24,6 +24,10 @@ optparse = OptionParser.new do |opts|
     options[:config_file] = c
   end
 
+  opts.on("-l", "--latest", String, "Get the deployed revision" ) do
+    options[:latest] = true
+  end
+
   opts.on("-r", "--revision=REVISION", String, "Revision to deploy (can be sha, branch, etc)") do |r|
     options[:rev] = r
   end
@@ -37,6 +41,11 @@ unless options[:environment]
 end
 
 deploy = DeployS3::Main.new(options)
+
+if options[:latest]
+  puts "The deploy sha is: #{deploy.remote_sha}"
+  exit 0
+end
 
 if deploy.up_to_date
   puts "Everything up-to-date (#{deploy.environment.green}: #{deploy.remote_sha.green})"
